@@ -1,22 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import numberService from './services/numbers'
 
-const Display = ({ book, filter }) => {
-    
+const Display = ({ book, filter, remover }) => {
     return (
         <div>
             {
                 book.filter(person => person.name.toLowerCase().includes(filter.toLowerCase())).map(filteredName => (
                 <ul key={filteredName.id} >
-                        <Person name={filteredName.name} number={filteredName.number}/>
+                    <Person name={filteredName.name} number={filteredName.number} id={filteredName.id} clickHandler={remover}/>
                 </ul>
-        ))}
+            ))}
         </div>
     )
 }
 
 const Person = (props) => {
     return (
-        <p>{props.name} {props.number}</p>
+            <div>{props.name} {props.number} <button onClick={() => props.clickHandler(props.id, props.name)}>delete</button></div>
         )
 }
 
@@ -29,33 +29,94 @@ const Filter = ({ filtered, filter }) => {
         </form>
     )
 }
+
+const Notification = ({ message }) => {
+    if (message === null) {
+        return null
+    }
+    return (
+        <div className="alert">
+            {message}
+        </div>
+    )
+}
+
+const Error = ({ message }) => {
+    if (message === null) {
+        return null
+    }
+    return (
+        <div className="error">
+            {message}
+        </div>    
+    )
+}
+
 const App = () => {
-    const [persons, setPersons] = useState([
-        { name: 'Arto Hellas', number: '040-123456' },
-        { name: 'Ada Lovelace', number: '39-44-5323523' },
-        { name: 'Dan Abramov', number: '12-43-234345' },
-        { name: 'Mary Poppendieck', number: '39-23-6423122' },
-    ])
+    const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filtered, setNewFilter] = useState('')
+    const [alert, setAlert] = useState(null)
+    const [error, setError] = useState(null)
+
+    useEffect(() => {
+        numberService
+            .getAll()
+            .then(initialNumbers => {                
+                setPersons(initialNumbers)
+        })
+    }, [])
 
     const addName = (event) => {
-            event.preventDefault()
-
-            if (persons.find(person => person.name === newName) !== undefined) {
-                window.alert(`${newName} is already added to phonebook`)
-            } else {
+        event.preventDefault()
+        const sameName = persons.find(person => (person.name === newName))
+        var errorCheck = false
+        if (persons.find(person => person.name === newName) !== undefined) {
+            if (window.confirm(`${newName} is already added to phonebook, replace old number with new one?`)) {
                 const nameObject = {
                     name: newName,
                     number: newNumber,
-                    id: persons.length + 1,
+                    id: sameName.id,
                 }
-                setPersons(persons.concat(nameObject))
-                setNewNumber('')
-                setNewName('')
-        }
-        
+                numberService
+                    .update(nameObject.id, nameObject)
+                    .then(returned => {
+                        setPersons(persons.map(person => person.id !== nameObject.id ? person : returned))
+                    })
+                    .catch(error => {
+                        errorCheck = true
+                        setError(`Information of ${newName} has already been removed from server`)
+                        setPersons(persons.filter(person => person.id !== nameObject.id))
+                        setTimeout(() => {
+                            setError(null)
+                        }, 5000)
+                    })
+                if (errorCheck) {
+                    setAlert(`Changed the number of ${newName}`)
+                    setTimeout(() => {
+                        setAlert(null)
+                    }, 5000)
+                }
+            }
+        } else {
+            const nameObject = {
+                name: newName,
+                number: newNumber,
+                id: persons.length + 1,
+            }
+            numberService
+                .create(nameObject)
+                .then(returnedNumber => {
+                    setPersons(persons.concat(returnedNumber))
+                })
+            setAlert(`Added  ${newName}`)
+            setTimeout(() => {
+                setAlert(null)
+            }, 5000)
+            setNewNumber('')
+            setNewName('')          
+        }   
     }
     
     const handleNameChange = (event) => {
@@ -72,10 +133,27 @@ const App = () => {
         setNewFilter(event.target.value)
     }  
 
+    const clickHandler = (id, name) => {
+        if (window.confirm(`Delete ${name}`)) {
+            numberService
+                .del(id)
+            numberService
+                .getAll()
+                .then(names => {
+                    setPersons(names)
+                })
+            setAlert(`Deleted  ${name}`)
+            setTimeout(() => {
+                setAlert(null)
+            }, 5000)
+        }
+    }
+
     return (
         <div>
             <h2>Phonebook</h2>
-
+            <Notification message={alert} />
+            <Error message={error} />
             <Filter filtered={filtered} filter={filter} />
 
             <h2>add a new</h2>
@@ -92,7 +170,7 @@ const App = () => {
                 </div>
             </form>
             <h2>Numbers</h2>
-            <Display book={persons} filter={filtered} />
+            <Display book={persons} filter={filtered} remover={clickHandler}/>
         </div>
     )
 }
