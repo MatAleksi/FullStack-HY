@@ -1,23 +1,25 @@
+
 import React, { useState, useEffect } from 'react'
 import numberService from './services/numbers'
+
 
 const Display = ({ book, filter, remover }) => {
     return (
         <div>
             {
                 book.filter(person => person.name.toLowerCase().includes(filter.toLowerCase())).map(filteredName => (
-                <ul key={filteredName.id} >
-                    <Person name={filteredName.name} number={filteredName.number} id={filteredName.id} clickHandler={remover}/>
-                </ul>
-            ))}
+                    <ul key={filteredName.id} >
+                        <Person name={filteredName.name} number={filteredName.number} id={filteredName.id} clickHandler={remover} />
+                    </ul>
+                ))}
         </div>
     )
 }
 
 const Person = (props) => {
     return (
-            <div>{props.name} {props.number} <button onClick={() => props.clickHandler(props.id, props.name)}>delete</button></div>
-        )
+        <div>{props.name} {props.number} <button onClick={() => props.clickHandler(props.id, props.name)}>delete</button></div>
+    )
 }
 
 const Filter = ({ filtered, filter }) => {
@@ -48,7 +50,7 @@ const Error = ({ message }) => {
     return (
         <div className="error">
             {message}
-        </div>    
+        </div>
     )
 }
 
@@ -63,9 +65,9 @@ const App = () => {
     useEffect(() => {
         numberService
             .getAll()
-            .then(initialNumbers => {                
+            .then(initialNumbers => {
                 setPersons(initialNumbers)
-        })
+            })
     }, [])
 
     const addName = (event) => {
@@ -115,10 +117,10 @@ const App = () => {
                 setAlert(null)
             }, 5000)
             setNewNumber('')
-            setNewName('')          
-        }   
+            setNewName('')
+        }
     }
-    
+
     const handleNameChange = (event) => {
         console.log(event.target.value)
         setNewName(event.target.value)
@@ -131,7 +133,7 @@ const App = () => {
 
     const filter = (event) => {
         setNewFilter(event.target.value)
-    }  
+    }
 
     const clickHandler = (id, name) => {
         if (window.confirm(`Delete ${name}`)) {
@@ -140,7 +142,8 @@ const App = () => {
             numberService
                 .getAll()
                 .then(names => {
-                    setPersons(names)
+                    setPersons(names.filter(nameId =>
+                        nameId.id !== id))
                 })
             setAlert(`Deleted  ${name}`)
             setTimeout(() => {
@@ -170,7 +173,7 @@ const App = () => {
                 </div>
             </form>
             <h2>Numbers</h2>
-            <Display book={persons} filter={filtered} remover={clickHandler}/>
+            <Display book={persons} filter={filtered} remover={clickHandler} />
         </div>
     )
 }

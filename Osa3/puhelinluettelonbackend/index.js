@@ -1,10 +1,12 @@
 const http = require('http')
 const express = require('express')
-const morgan = require('morgan')
+var morgan = require('morgan')
 const { response } = require('express')
 const app = express()
-app.use(express.json())
+const cors = require('cors')
 
+app.use(express.json())
+app.use(cors())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
 morgan.token("content", (request) => {
     return request.method === "POST" ? JSON.stringify(request.body) : " ";
@@ -43,7 +45,11 @@ app.get('/api/persons', (request, response) => {
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     const person = persons.find(person => person.id === id)
-    response.json(person)
+    if (person) {
+        response.json(person)
+    } else{
+        response.status(404).end()
+    }
 })
 
 app.get('/info', (req, res) => {
@@ -54,7 +60,7 @@ app.get('/info', (req, res) => {
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    const person = persons.filter(person => person.id !== id)
+    persons = persons.filter(person => person.id !== id)
     response.status(204).end()
 })
 
