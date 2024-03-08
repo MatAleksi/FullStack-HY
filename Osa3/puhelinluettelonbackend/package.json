@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf dist && cd .. && cd ../Osa2/puhelinluettelo && npm run build && cd .. && cd .. && cp -r ./Osa2/puhelinluettelo/build ./Osa3/puhelinluettelonbackend && cd ./Osa3/puhelinluettelonbackend && mv build dist",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    
   },
   "author": "Aleksi Mattila",
   "license": "ISC",
