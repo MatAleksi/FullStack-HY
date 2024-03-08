@@ -7,6 +7,7 @@ const cors = require('cors')
 
 app.use(express.json())
 app.use(cors())
+app.use(express.static('dist'))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
 morgan.token("content", (request) => {
     return request.method === "POST" ? JSON.stringify(request.body) : " ";
