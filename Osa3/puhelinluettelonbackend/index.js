@@ -7,6 +7,7 @@ const { response } = require('express')
 const app = express()
 const cors = require('cors')
 const Person = require('./models/person')
+const { errorMonitor } = require('stream')
 
 const PORT = process.env.PORT
 
@@ -29,30 +30,60 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    Person.findById(request.params.id).then(person=>{
-        response.json(person)
+    Person.find({}).then(person=>{
+        const id = request.params.id
+        console.log(id)
+        console.log(person.length)
+        if(id>=person.length){
+            return response.status(404).end()
+        }
+        response.json(person[id])
     })
 })
 
-app.get('/info', (req, res) => {
-    const resp1 = 'Phonebook has info for ' + persons.length +' people'
-    const resp2 = new Date().toString() 
-    res.send('<div>' + resp1 + '</div>' + '<div>' + resp2 + '</div>')
+app.get('/info', (request, response) => {
+    let amount = 0
+    Person.find({}).then(persons=>{
+        persons.forEach(person=>{
+            amount+=1
+            console.log(amount)
+        })            
+        const resp1 = 'Phonebook has info for ' + amount +' people'
+        const resp2 = new Date().toString() 
+        response.send('<div>' + resp1 + '</div>' + '<div>' + resp2 + '</div>')
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).end()
+    Person.find({}).then(person=>{
+        const id = request.params.id
+        console.log(id)
+        console.log(person[id])
+        if(id>=person.length){
+            return response.status(404).end()
+        }
+        Person.deleteOne(person[id])
+        response.status(204).end()
+    })
 })
 
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
     console.log(body)
-    if(body.name === undefined){
+    if(body.name === undefined || body.name === ""){
         return response.status(400).json({error: 'content misisng' })
     }
+    if(body.number ===undefined || body.number === ""){
+        return response.status(400).json({error: 'content missing'})
+    }
+    Person.find({}).then(persons=>{
+        persons.forEach(person=>{
+            if(person.name === body.name){
+                return response.status(409).json({error: 'name must be unique'})
+            }
+        })
+    })
     const person = new Person({
         name: body.name,
         number: body.number
