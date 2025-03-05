@@ -29,19 +29,15 @@ app.get('/api/persons', (request, response) => {
     })
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    Person.find({}).then(person=>{
-        const id = request.params.id
-        console.log(id)
-        console.log(person.length)
-        if(id>=person.length){
-            return response.status(404).end()
-        }
-        response.json(person[id])
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findOne({id:request.params.id})
+    .then(result=>{
+        response.json(result)
     })
+    .catch(error => next(error))
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
     let amount = 0
     Person.find({}).then(persons=>{
         persons.forEach(person=>{
@@ -52,24 +48,21 @@ app.get('/info', (request, response) => {
         const resp2 = new Date().toString() 
         response.send('<div>' + resp1 + '</div>' + '<div>' + resp2 + '</div>')
     })
+    .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    Person.find({}).then(person=>{
-        const id = request.params.id
-        console.log(id)
-        console.log(person[id])
-        if(id>=person.length){
-            return response.status(404).end()
-        }
-        Person.deleteOne(person[id])
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findOneAndDelete({id: request.params.id})
+    .then(result =>{
         response.status(204).end()
     })
+    .catch(error => next(error))
 })
 
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
+    let names = []
     console.log(body)
     if(body.name === undefined || body.name === ""){
         return response.status(400).json({error: 'content misisng' })
@@ -79,17 +72,27 @@ app.post('/api/persons', (request, response) => {
     }
     Person.find({}).then(persons=>{
         persons.forEach(person=>{
-            if(person.name === body.name){
-                return response.status(409).json({error: 'name must be unique'})
-            }
+            names.push(person.name)
         })
+        if(names.includes(body.name)){
+        
+            return response.status(409).json({error: 'name must be unique'})
+        }else{
+            const newperson = new Person({
+                name: body.name,
+                number: body.number,
+                id: (Math.random()*100000000).toString()
+            })
+            newperson.save().then(savedPerson =>{
+                response.json(savedPerson)
+            })
+        }
     })
-    const person = new Person({
-        name: body.name,
-        number: body.number
-    })
-    person.save().then(savedPerson =>{
-        response.json(savedPerson)
-    })
+    .catch(error => next(error))
 })
 
+const errorHandler = (error, request, response, next) =>{
+        console.log(error.message)
+        next(error)
+}
+app.use(errorHandler)
