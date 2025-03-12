@@ -30,7 +30,7 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-    Person.findOne({id:request.params.id})
+    Person.findById(request.params.id)
     .then(result=>{
         response.json(result)
     })
@@ -52,7 +52,7 @@ app.get('/info', (request, response, next) => {
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
-    Person.findOneAndDelete({id: request.params.id})
+    Person.findByIdAndDelete(request.params.id)
     .then(result =>{
         response.status(204).end()
     })
@@ -80,8 +80,8 @@ app.post('/api/persons', (request, response, next) => {
         }else{
             const newperson = new Person({
                 name: body.name,
-                number: body.number,
-                id: (Math.random()*100000000).toString()
+                number: body.number
+                //id: (Math.random()*100000000).toString()
             })
             newperson.save().then(savedPerson =>{
                 response.json(savedPerson)

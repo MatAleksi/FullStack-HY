@@ -30,7 +30,6 @@ if (process.argv.length===3){
   })
 }
 if (process.argv.length>3){
-  const id = Math.random(10000000).toString()
   console.log(id)
   const person = new Person({
     name: process.argv[3],
