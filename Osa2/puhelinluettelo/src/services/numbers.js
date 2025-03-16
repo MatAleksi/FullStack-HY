@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = '/api/persons'
+const baseUrl = 'http://localhost:3001/api/persons'
 
 const getAll = () => {
     const request = axios.get(baseUrl)
@@ -8,7 +8,14 @@ const getAll = () => {
     })
 } 
 
-const create = newObject => {
+const getOne = (id) => {
+    const request = axios.get(`${baseUrl}/${id}`)
+    return request.then(response => {
+        return response.data
+    })
+}
+
+const create = (newObject) => {
     const request = axios.post(baseUrl, newObject)
     return request.then(response => {
         return response.data
@@ -29,4 +36,4 @@ const del = (id) => {
     })
 }
 
-export default { getAll, create, update, del }
+export default { getAll, create, update, del, getOne }

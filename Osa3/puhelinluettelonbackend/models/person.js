@@ -17,13 +17,13 @@ mongoose.connect(url)
 
 const personSchema = new mongoose.Schema({
     name: String,
-    number: String
+    number: String,
   })
-  
-personSchema.set('toJSON', {
 
+personSchema.set('toJSON', {
+    
     transform: (document, returnedObject) =>{
-        returnedObjectID = returnedObject._id.toString()    
+        returnedObjectID = returnedObject._id.toString()   
         delete returnedObject._id
         delete returnedObject.__v
     }

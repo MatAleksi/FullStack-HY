@@ -66,6 +66,7 @@ const App = () => {
         numberService
             .getAll()
             .then(initialNumbers => {
+                console.log(initialNumbers[1])
                 setPersons(initialNumbers)
             })
     }, [])
@@ -73,6 +74,7 @@ const App = () => {
     const addName = (event) => {
         event.preventDefault()
         const sameName = persons.find(person => (person.name === newName))
+        console.log('samename' + sameName)
         var errorCheck = false
         if (persons.find(person => person.name === newName) !== undefined) {
             if (window.confirm(`${newName} is already added to phonebook, replace old number with new one?`)) {
@@ -81,6 +83,7 @@ const App = () => {
                     number: newNumber,
                     id: sameName.id,
                 }
+                console.log('name' + nameObject)
                 numberService
                     .update(nameObject.id, nameObject)
                     .then(returned => {
@@ -101,11 +104,12 @@ const App = () => {
                     }, 5000)
                 }
             }
+            window.location.reload()
         } else {
             const nameObject = {
                 name: newName,
                 number: newNumber,
-                id: persons.length + 1,
+                
             }
             numberService
                 .create(nameObject)
@@ -137,8 +141,10 @@ const App = () => {
 
     const clickHandler = (id, name) => {
         if (window.confirm(`Delete ${name}`)) {
+            console.log(id)
             numberService
                 .del(id)
+            
             numberService
                 .getAll()
                 .then(names => {
@@ -149,6 +155,7 @@ const App = () => {
             setTimeout(() => {
                 setAlert(null)
             }, 5000)
+            
         }
     }
 

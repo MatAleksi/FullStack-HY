@@ -25,14 +25,30 @@ morgan.token("content", (request) => {
 
 app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons=>{
-        response.json(persons)
+        const listAndIds = []
+        persons.forEach(person => {
+            console.log(person._id)
+            listAndIds.push({
+                name: person.name,
+                number: person.number,
+                id: person._id.toString()
+            })            
+        })
+        console.log(listAndIds)
+        response.json(listAndIds)
     })
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
     .then(result=>{
-        response.json(result)
+        console.log(result)
+        const reply = {
+            name: result.name,
+            number: result.number,
+            id: request.params.id
+        }
+        response.json(reply)
     })
     .catch(error => next(error))
 })
@@ -89,6 +105,23 @@ app.post('/api/persons', (request, response, next) => {
         }
     })
     .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (request, response, next) =>{
+    const body = request.body
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+        .then(updatedPerson => {
+            if (updatedPerson) {
+                response.json(updatedPerson)
+              } else {
+                response.status(404).end()
+              }
+        })
+        .catch(error => next(error))
 })
 
 const errorHandler = (error, request, response, next) =>{
