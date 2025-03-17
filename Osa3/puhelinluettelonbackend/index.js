@@ -55,7 +55,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.get('/info', (request, response, next) => {
     let amount = 0
-    Person.find({}).then(persons=>{
+    Person.find({}).then(persons=>{ 
         persons.forEach(person=>{
             amount+=1
             console.log(amount)
@@ -80,12 +80,6 @@ app.post('/api/persons', (request, response, next) => {
     const body = request.body
     let names = []
     console.log(body)
-    if(body.name === undefined || body.name === ""){
-        return response.status(400).json({error: 'content misisng' })
-    }
-    if(body.number ===undefined || body.number === ""){
-        return response.status(400).json({error: 'content missing'})
-    }
     Person.find({}).then(persons=>{
         persons.forEach(person=>{
             names.push(person.name)
@@ -102,6 +96,7 @@ app.post('/api/persons', (request, response, next) => {
             newperson.save().then(savedPerson =>{
                 response.json(savedPerson)
             })
+            .catch(error => next(error))
         }
     })
     .catch(error => next(error))
@@ -125,12 +120,13 @@ app.put('/api/persons/:id', (request, response, next) =>{
 })
 
 const errorHandler = (error, request, response, next) =>{
-        console.log(error.message)
+        console.log('error: ' + error)
 
         if(error.name === 'CastError'){
-            return response.status(400).json({ error: 'malformatted id' })
+            return response.status(400).send({ error: 'malformatted id' })
         }else if(error.name === 'ValidationError'){
-            return response.status(400).json({ error: error.message })
+            console.log('validation error!')
+            return response.status(400).json({ error: 'Hupsis'})
         }
 
         next(error)

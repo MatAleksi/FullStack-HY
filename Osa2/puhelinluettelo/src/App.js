@@ -63,18 +63,19 @@ const App = () => {
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        numberService
-            .getAll()
-            .then(initialNumbers => {
-                console.log(initialNumbers[1])
-                setPersons(initialNumbers)
-            })
-    }, [])
+      
+    }, [persons])
+
+    numberService
+        .getAll()
+        .then(initialNumbers => {
+            setPersons(initialNumbers)
+    })
 
     const addName = (event) => {
+        console.log(persons)
         event.preventDefault()
         const sameName = persons.find(person => (person.name === newName))
-        console.log('samename' + sameName)
         var errorCheck = false
         if (persons.find(person => person.name === newName) !== undefined) {
             if (window.confirm(`${newName} is already added to phonebook, replace old number with new one?`)) {
@@ -83,7 +84,6 @@ const App = () => {
                     number: newNumber,
                     id: sameName.id,
                 }
-                console.log('name' + nameObject)
                 numberService
                     .update(nameObject.id, nameObject)
                     .then(returned => {
@@ -97,14 +97,14 @@ const App = () => {
                             setError(null)
                         }, 5000)
                     })
-                if (errorCheck) {
+                if (!errorCheck) {
                     setAlert(`Changed the number of ${newName}`)
                     setTimeout(() => {
                         setAlert(null)
                     }, 5000)
                 }
             }
-            window.location.reload()
+        
         } else {
             const nameObject = {
                 name: newName,
@@ -116,14 +116,35 @@ const App = () => {
                 .then(returnedNumber => {
                     setPersons(persons.concat(returnedNumber))
                 })
-            setAlert(`Added  ${newName}`)
-            setTimeout(() => {
-                setAlert(null)
-            }, 5000)
+                .catch(error => {
+                    errorCheck = true
+                    console.log(error)
+                    setError(error)
+                    setTimeout(() => {
+                        setAlert(null)
+                    }, 5000)
+                })
+            if(!errorCheck){    
+                setAlert(`Added  ${newName}`)
+                setTimeout(() => {
+                    setAlert(null)
+                }, 5000)
+            }
             setNewNumber('')
             setNewName('')
         }
+        setTimeout(() => {
+            numberService
+                .getAll()
+                .then(names =>{
+                    console.log(names)
+                    setPersons(names)
+                })
+        }, 500)
+        console.log(persons)
     }
+
+
 
     const handleNameChange = (event) => {
         console.log(event.target.value)
