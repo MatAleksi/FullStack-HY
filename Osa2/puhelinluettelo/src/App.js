@@ -126,7 +126,7 @@ const App = () => {
                     }, 5000)
                     
                 })
-            if(errorCheck){    
+            if(!errorCheck){    
                 setAlert(`Added  ${newName}`)
                 setTimeout(() => {
                     setAlert(null)
