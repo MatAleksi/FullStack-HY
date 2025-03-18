@@ -65,12 +65,13 @@ const App = () => {
     useEffect(() => {
       
     }, [persons])
-
-    numberService
-        .getAll()
-        .then(initialNumbers => {
-            setPersons(initialNumbers)
-    })
+    if(persons.length === 0){
+        numberService
+            .getAll()
+            .then(initialNumbers => {
+                setPersons(initialNumbers)
+        })
+    }
 
     const addName = (event) => {
         console.log(persons)
@@ -91,13 +92,13 @@ const App = () => {
                     })
                     .catch(error => {
                         errorCheck = true
-                        setError(`Information of ${newName} has already been removed from server`)
-                        setPersons(persons.filter(person => person.id !== nameObject.id))
+                        console.log(error.response)
+                        setError(error.response.data.error.toString())
                         setTimeout(() => {
                             setError(null)
                         }, 5000)
                     })
-                if (!errorCheck) {
+                if (errorCheck) {
                     setAlert(`Changed the number of ${newName}`)
                     setTimeout(() => {
                         setAlert(null)
@@ -118,13 +119,14 @@ const App = () => {
                 })
                 .catch(error => {
                     errorCheck = true
-                    console.log(error)
-                    setError(error)
+                    console.log(error.response)
+                    setError(error.response.data.error.toString())
                     setTimeout(() => {
-                        setAlert(null)
+                        setError(null)
                     }, 5000)
+                    
                 })
-            if(!errorCheck){    
+            if(errorCheck){    
                 setAlert(`Added  ${newName}`)
                 setTimeout(() => {
                     setAlert(null)

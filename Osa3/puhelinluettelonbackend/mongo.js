@@ -10,29 +10,28 @@ const url =
   `mongodb+srv://mattilaaleksi:${password}@fullstackpuhelinluettel.vjssdpm.mongodb.net/?retryWrites=true&w=majority&appName=Fullstackpuhelinluettelo`
 
 mongoose.set('strictQuery', false)
-mongoose.connect(url) 
+mongoose.connect(url)
 
 
-const Person = mongoose.model('Person', personSchema)
+const Person = mongoose.model('Person', Person.personSchema)
 
 if (process.argv.length===3){
-  Person.find({}).then(result =>{
-    console.log("Phonebook:")
-    result.forEach(person =>{
-      console.log(person.name + " " + person.number)
+  Person.find({}).then(result => {
+    console.log('Phonebook:')
+    result.forEach(person => {
+      console.log(person.name + ' ' + person.number)
     })
     mongoose.connection.close()
   })
 }
 if (process.argv.length>3){
-  console.log(id)
   const person = new Person({
     name: process.argv[3],
     number: process.argv[4],
-  })  
-
-  person.save().then(result => {
-    console.log('number saved!')
-    mongoose.connection.close()
   })
+
+  person.save().then(
+    console.log('number saved!'),
+    mongoose.connection.close()
+  )
 }
