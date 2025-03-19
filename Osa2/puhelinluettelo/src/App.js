@@ -126,8 +126,9 @@ const App = () => {
                     }, 5000)
                     
                 })
-            if(!errorCheck){    
+            if(errorCheck){    
                 setAlert(`Added  ${newName}`)
+                console.log('hiphei')
                 setTimeout(() => {
                     setAlert(null)
                 }, 5000)
