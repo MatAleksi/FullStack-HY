@@ -9,6 +9,7 @@
     "axios": "^1.7.7",
     "cors": "^2.8.5",
     "react": "^17.0.2",
+    "react-build-dist": "^0.0.8",
     "react-dom": "^17.0.2",
     "react-scripts": "^5.0.1",
     "vite": "^6.2.2",
@@ -17,7 +18,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "preview": "vite preview",
+    "build:dist": "react-build-dist",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
