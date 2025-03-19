@@ -1,3 +1,3 @@
 # FullStack-HY
 
-Osa 3 tehtävä 10 puhelinluettelon backend [osoite](https://puhelinluettelobackend-3jzi.onrender.com/)
+Osan 3 puhelinluettelon osoite [https://puhelinluettelobackend-3jzi.onrender.com/](https://puhelinluettelobackend-3jzi.onrender.com/)
