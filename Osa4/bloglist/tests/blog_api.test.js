@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -39,12 +39,50 @@ test('Blogs are returned as JSON', async() => {
 })
 
 test('Blogs are identified with id', async() => {
-    const response = await api.get('/api/blogs')
+    const response = await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
     const list = response.body.map(r => r.id)
     assert.strictEqual(list.length, response.body.length)
     assert.strictEqual(response.body[0]._id, undefined)
 })
 
+describe('Adding blogs', () => {
+    test('Blog can be added', async() => {
+        const newBlog = {
+            title: 'aaa',
+            author: 'bbb',
+            url: 'aba.com',
+            likes: 1
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const response = await api.get('/api/blogs')
+        const list = response.body.map(r => r.title)
+        assert.strictEqual('aaa', list[2])    
+    })
+
+    test('Amount of blogs grows by one', async() =>{
+        const newBlog = {
+            title: 'aaa',
+            author: 'bbb',
+            url: 'aba.com',
+            likes: 1
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+        const response = await api.get('/api/blogs')
+        assert.strictEqual(response.body.length, initialBlogs.length+1)
+    })
+})
 after(async () => {
     await mongoose.connection.close()
 })
