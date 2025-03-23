@@ -44,5 +44,26 @@ const mostBlogs = (blogs) => {
     return result
 }
 
-module.exports = {dummy, totalLikes, favoriteBlog, mostBlogs}
+const mostLikes = (blogs) => {
+    const groupedBlogs = _.groupBy(blogs, ({author}) => author)
+    let currentMost = 0
+    let result = null
+    _.forEach(groupedBlogs, function(value, key){
+        let likes = 0
+        value.forEach(blog => {
+            likes = likes + blog.likes
+        })
+        console.log(key + likes)
+        if(likes > currentMost){
+            currentMost = likes
+            result = {
+                author: key,
+                likes: likes
+            }
+        }      
+    })
+    return result
+}
+
+module.exports = {dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes}
 
