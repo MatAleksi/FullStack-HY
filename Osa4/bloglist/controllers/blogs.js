@@ -4,10 +4,10 @@ const logger = require('../utils/logger')
 
 
 blogsRouter.get('/', (request, response) => {
-    logger.info('test')
+    //logger.info('test')
     Blog.find({})
       .then(blogs => {
-        logger.info(blogs)
+        //logger.info(blogs)
         response.json(blogs)
       })
   })
