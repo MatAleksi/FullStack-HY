@@ -83,6 +83,51 @@ describe('Adding blogs', () => {
         assert.strictEqual(response.body.length, initialBlogs.length+1)
     })
 })
+
+/*test('If likes is given no value, it becomes 0', async() => {
+    const newBlog = {
+        title: 'aaa',
+        author: 'bbb',
+        url: 'aba.com',
+    }
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+    const response = await api.get('/api/blogs')
+    const list = response.body.map(r => r.likes)
+    assert.strictEqual(0, list[2])
+})
+*/
+
+describe('Deleting blogs', () => {
+    test('Length of bloglist goes down by one', async() => {
+        const response = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        const list = response.body.map(r => r.id)
+        await api
+            .delete(`/api/blogs/${list[0]}`)
+            .expect(204)
+        const response2 = await api.get('/api/blogs')
+        assert.strictEqual(initialBlogs.length-1, response2.body.length)
+    })
+    test('Correct blog is deleted', async() => {
+        const response = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        const list = response.body.map(r => r.id)
+        await api
+            .delete(`/api/blogs/${list[0]}`)
+            .expect(204)
+        const response2 = await api.get('/api/blogs')
+        assert.notStrictEqual(initialBlogs[0].id, list[0])
+    })
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
