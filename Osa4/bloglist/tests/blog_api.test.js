@@ -128,6 +128,25 @@ describe('Deleting blogs', () => {
     })
 })
 
+describe('Updating blogs', () => {   
+    const blogs = helper.getDb()
+    const id = blogs[0].id
+    test('Updated blog has new title', async() => {
+        const newBlog = {
+            title: 'aaaaa',
+            author: 'bbbbb',
+            url: 'bababa.com',
+            likes: 1
+        }
+        await api
+            .put((`/api/blogs/${id}`, newBlog))
+        const updatedBlog = await api
+            .get(`/api/blogs/${id}`)
+        assert.strictEqual(blogs[0].title, updatedBlog.title)
+    })
+    
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
