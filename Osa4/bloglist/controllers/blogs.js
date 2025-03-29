@@ -39,7 +39,7 @@ blogsRouter.put('/:id', async(request, response) => {
   response.json(newBlog)
 })
 
-blogsRouter.get('/:id', async(request, respone) => {
+blogsRouter.get('/:id', async(request, response) => {
   const blog = await Blog.findById(request.params.id)
   response.json(blog.body)
 })

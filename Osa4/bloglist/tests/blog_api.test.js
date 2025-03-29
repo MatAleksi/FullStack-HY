@@ -129,9 +129,13 @@ describe('Deleting blogs', () => {
 })
 
 describe('Updating blogs', () => {   
-    const blogs = helper.getDb()
-    const id = blogs[0].id
     test('Updated blog has new title', async() => {
+        const response = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        const list = response.body.map(r => r.id)
+        const id = list[0]
         const newBlog = {
             title: 'aaaaa',
             author: 'bbbbb',
@@ -142,7 +146,10 @@ describe('Updating blogs', () => {
             .put((`/api/blogs/${id}`, newBlog))
         const updatedBlog = await api
             .get(`/api/blogs/${id}`)
-        assert.strictEqual(blogs[0].title, updatedBlog.title)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        console.log(updatedBlog)
+        assert.strictEqual(response.body[0].title, updatedBlog.title)
     })
     
 })
