@@ -51,7 +51,6 @@ test('Blogs are identified with id', async() => {
 
 describe('Adding blogs', () => {
     test('Amount of blogs grows by one', async() =>{
-        logger.info('grow')
         const newBlog = {
             title: 'aaa',
             author: 'bbb',
@@ -68,7 +67,6 @@ describe('Adding blogs', () => {
     })
 
     test('Correct blog is added', async() =>{
-        logger.info('grow')
         const newBlog = {
             title: 'aaa',
             author: 'bbb',
@@ -164,7 +162,7 @@ describe('Deleting blogs', () => {
 })
 
 describe('Updating blogs', () => {   
-    test('Updated blog has new title', async() => {
+    test('Updated blog updates', async() => {
         const response = await api
             .get('/api/blogs')
             .expect(200)
@@ -178,13 +176,17 @@ describe('Updating blogs', () => {
             likes: 1
         }
         await api
-            .put((`/api/blogs/${id}`, newBlog))
+            .put(`/api/blogs/${id}`)
+            .send(newBlog)
+            .expect(201)
         const updatedBlog = await api
             .get(`/api/blogs/${id}`)
             .expect(200)
             .expect('Content-Type', /application\/json/)
-        console.log(updatedBlog)
-        assert.strictEqual(response.body[0].title, updatedBlog.title)
+        assert.strictEqual(newBlog.title, updatedBlog.body.title)
+        assert.strictEqual(newBlog.author, updatedBlog.body.author)
+        assert.strictEqual(newBlog.url, updatedBlog.body.url)
+        assert.strictEqual(newBlog.likes, updatedBlog.body.likes)
     })
     
 })
