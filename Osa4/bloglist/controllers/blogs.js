@@ -12,14 +12,24 @@ blogsRouter.get('/', async(request, response) => {
   
 blogsRouter.post('/', async(request, response) => {
   const body = request.body
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes
-  })
-  const savedBlog = await blog.save()
-  response.status(201).json(savedBlog)
+  if(!body.hasOwnProperty('title') || !body.hasOwnProperty('url')){
+    logger.info('Bad request')
+    response.status(400).json({message: "Bad request"})
+  }else{
+    let likeAmount = 0
+    if(body.hasOwnProperty('likes')){
+      logger.info(body.likes + ' likes!')
+      likeAmount = body.likes
+    }
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: likeAmount
+    })
+    const savedBlog = await blog.save()
+    response.status(201).json(savedBlog)
+  }
 })
 
 blogsRouter.delete('/:id', async(request, response) =>{
@@ -27,20 +37,21 @@ blogsRouter.delete('/:id', async(request, response) =>{
   response.status(204).end()
 })
 
+blogsRouter.get('/:id', async(request, response) => {
+  const blog  = await Blog.findById(request.params.id)
+  response.json(blog)
+})
+
 blogsRouter.put('/:id', async(request, response) => {
   const body = request.body
-  const newBlog = {
+  const updateBlog = {
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes
   }
-  await Blog.findByIdAndUpdate(request.params.id, newBlog, {new: true, runValidators: true})
-  response.json(newBlog)
+  const blogUpdated = await Blog.findByIdAndUpdate(request.params.id, updateBlog)
+  response.status(201).json(blogUpdated)
 })
 
-blogsRouter.get('/:id', async(request, response) => {
-  const blog = await Blog.findById(request.params.id)
-  response.json(blog.body)
-})
 module.exports = blogsRouter
