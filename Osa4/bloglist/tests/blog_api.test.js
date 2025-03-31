@@ -103,22 +103,6 @@ describe('Adding blogs', () => {
         assert.strictEqual(0, list[2])
     })
 
-    test('If likes is given no value, it becomes 0', async() => {
-        const newBlog = {
-            title: 'aaa',
-            author: 'bbb',
-            url: 'aba.com',
-        }
-        await api
-            .post('/api/blogs')
-            .send(newBlog)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
-        const response = await api.get('/api/blogs')
-        const list = response.body.map(r => r.likes)
-        assert.strictEqual(0, list[2])
-    })
-
     test('If title field is missing return 400', async() => {
         const newBlog = {
             author: 'bbb',
