@@ -5,6 +5,7 @@ const app = require('../app')
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
 const assert = require('node:assert')
+const logger = require('../utils/logger')
 
 const api = supertest(app)
 
@@ -49,25 +50,8 @@ test('Blogs are identified with id', async() => {
 })
 
 describe('Adding blogs', () => {
-    test('Blog can be added', async() => {
-        const newBlog = {
-            title: 'aaa',
-            author: 'bbb',
-            url: 'aba.com',
-            likes: 1
-        }
-        await api
-            .post('/api/blogs')
-            .send(newBlog)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
-
-        const response = await api.get('/api/blogs')
-        const list = response.body.map(r => r.title)
-        assert.strictEqual('aaa', list[2])    
-    })
-
     test('Amount of blogs grows by one', async() =>{
+        logger.info('grow')
         const newBlog = {
             title: 'aaa',
             author: 'bbb',
@@ -82,24 +66,91 @@ describe('Adding blogs', () => {
         const response = await api.get('/api/blogs')
         assert.strictEqual(response.body.length, initialBlogs.length+1)
     })
-})
 
-/*test('If likes is given no value, it becomes 0', async() => {
-    const newBlog = {
-        title: 'aaa',
-        author: 'bbb',
-        url: 'aba.com',
-    }
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-    const response = await api.get('/api/blogs')
-    const list = response.body.map(r => r.likes)
-    assert.strictEqual(0, list[2])
+    test('Correct blog is added', async() =>{
+        logger.info('grow')
+        const newBlog = {
+            title: 'aaa',
+            author: 'bbb',
+            url: 'aba.com',
+            likes: 1
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+        const response = await api.get('/api/blogs')
+        const blog = response.body[2]
+        assert.strictEqual(blog.title, newBlog.title)
+        assert.strictEqual(blog.author, newBlog.author)
+        assert.strictEqual(blog.url, newBlog.url)
+    })
+
+    test('If likes is given no value, it becomes 0', async() => {
+        const newBlog = {
+            title: 'aaa',
+            author: 'bbb',
+            url: 'aba.com',
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+        const response = await api.get('/api/blogs')
+        const list = response.body.map(r => r.likes)
+        assert.strictEqual(0, list[2])
+    })
+
+    test('If likes is given no value, it becomes 0', async() => {
+        const newBlog = {
+            title: 'aaa',
+            author: 'bbb',
+            url: 'aba.com',
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+        const response = await api.get('/api/blogs')
+        const list = response.body.map(r => r.likes)
+        assert.strictEqual(0, list[2])
+    })
+
+    test('If title field is missing return 400', async() => {
+        const newBlog = {
+            author: 'bbb',
+            url: 'aba.com',
+            likes: 1
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+        const response = await api.get('/api/blogs')
+        const list = response.body.map(r => r.likes)
+        assert.strictEqual(list.length, initialBlogs.length)
+    })
+
+    test('If title url is missing return 400', async() => {
+        const newBlog = {
+            title: 'aba',
+            author: 'bbb',
+            likes: 1
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+        const response = await api.get('/api/blogs')
+        const list = response.body.map(r => r.likes)
+        assert.strictEqual(list.length, initialBlogs.length)
+    })
 })
-*/
 
 describe('Deleting blogs', () => {
     test('Length of bloglist goes down by one', async() => {
