@@ -118,6 +118,8 @@ const App = () => {
     }>logout</button>
   )
 
+  let bloglist = blogs.sort((a, b) => b.likes - a.likes) 
+
   if (user === null) {
     return (
       <div>
@@ -140,7 +142,7 @@ const App = () => {
       <br></br> 
       <BlogForm createBlog={addBlog}/>
       <br></br>
-      {blogs.map(blog =>
+      {bloglist.map(blog => 
         <Blog key={blog.id} blog={blog} addLike={updateLike} user={blog.user}/>
       )}
     </div>
