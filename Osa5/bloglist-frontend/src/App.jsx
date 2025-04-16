@@ -74,6 +74,12 @@ const App = () => {
     }, 5000)
   }
 
+  const updateLike = async (blogObject) => {
+    const updateBlog = await blogService.update(blogObject.id, blogObject)
+    const blogsUpdated = blogs.map(blog => blog.id !== blogObject.id ? blog : updateBlog)
+    setBlogs(blogsUpdated)
+  }
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -126,10 +132,10 @@ const App = () => {
       <h2>blogs</h2>
       <div>Logged in as {user.name} {logOut()}</div>
       <br></br> 
-      <BlogForm createBlog ={addBlog}/>
+      <BlogForm createBlog={addBlog}/>
       <br></br>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} addLike={updateLike}/>
       )}
     </div>
   )
