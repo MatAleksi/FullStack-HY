@@ -66,10 +66,12 @@ const App = () => {
     console.log('logging in with', username, password)
   }
 
-  const addBlog = (blogObject) => {
-    const returnedBlog = blogService.create(blogObject)
+  const addBlog = async (blogObject) => {
+    const returnedBlog = await blogService.create(blogObject)
+    console.log('luotu: ', returnedBlog)
     setBlogs(blogs.concat(returnedBlog))
     setAlert(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+    setUpdateState(!updateState)
     setTimeout(() => {
       setAlert(null)
     }, 5000)
@@ -77,12 +79,26 @@ const App = () => {
 
   const updateLike = async (blogObject) => {
     try {
+      console.log(blogObject)
       const updatedBlog = await blogService.update(blogObject.id, blogObject)
       const blogsUpdated = blogs.map(blog => blog.id !== blogObject.id ? blog : updatedBlog) 
       setBlogs(blogsUpdated)
       setUpdateState(!updateState) 
     } catch (error) {
       console.log('Error:', error)
+    }
+  }
+
+  const deleteBlog = async (blogObject) => {
+    console.log('blogObject', blogObject)
+    if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)) {
+      try {
+        const blogRemoved = await blogService.remove(blogObject.id)
+        setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
+        setUpdateState(!updateState) 
+      } catch (error) {
+        console.log('Error:', error)
+      }
     }
   }
 
@@ -143,7 +159,11 @@ const App = () => {
       <BlogForm createBlog={addBlog}/>
       <br></br>
       {bloglist.map(blog => 
-        <Blog key={blog.id} blog={blog} addLike={updateLike} user={blog.user}/>
+        <Blog key={blog.id} 
+              blog={blog} 
+              addLike={updateLike} 
+              user={user} 
+              removeBlog={deleteBlog}/>
       )}
     </div>
   )
