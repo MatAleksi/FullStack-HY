@@ -1,10 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import BlogForm from './BlogForm'
 import React from 'react'
 
 
-describe('<Blog />', () => {
+describe('Blog tests', () => {
   const blog = {
     title: 'Test Title',
     author: 'Test Author',
@@ -52,5 +53,30 @@ describe('<Blog />', () => {
     await buttonClick.click(likeButton)
 
     expect(screen.queryByText('2 likes')).toBeDefined()
+    expect(mockHandlerLike.mock.calls).toHaveLength(2)
+  })
+  test('Creating blog works', async () => {
+    const addBlog = vi.fn()
+    const mouseClick = userEvent.setup()
+
+    render(<BlogForm createBlog={addBlog}/>)
+
+    const createButton = screen.getByText('create')
+    await mouseClick.click(createButton)
+
+    const titleInput = screen.getByPlaceholderText('title')
+    const authorInput = screen.getByPlaceholderText('author')
+    const urlInput = screen.getByPlaceholderText('url')
+    const submit = screen.getByText('submit')
+
+    await mouseClick.type(titleInput, 'Test Title2')
+    await mouseClick.type(authorInput, 'Test Author2')
+    await mouseClick.type(urlInput, 'http://testurl2.com')
+    await mouseClick.click(submit)
+
+    expect(addBlog.mock.calls).toHaveLength(1)
+    expect(addBlog.mock.calls[0][0].title).toBe('Test Title2')
+    expect(addBlog.mock.calls[0][0].author).toBe('Test Author2')
+    expect(addBlog.mock.calls[0][0].url).toBe('http://testurl2.com')
   })
 })
