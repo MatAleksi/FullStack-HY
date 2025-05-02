@@ -129,7 +129,7 @@ const App = () => {
   )
 
   const logOut = () => (
-    <button onClick={() => {
+    <button id="logoutButton" onClick={() => {
       setUser(null)
       window.localStorage.removeItem('loggedBloglistUser')
     }

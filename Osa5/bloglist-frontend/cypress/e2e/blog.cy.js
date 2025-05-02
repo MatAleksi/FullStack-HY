@@ -74,4 +74,32 @@ describe('Blog app', function() {
       cy.contains('Testi blogi').should('not.exist')
     })
   })
+  describe('Wrong user', function(){
+    it('cannot remove a blog', function() {
+      const user2 = {
+        name: 'Testi Käyttäjä2',
+        username: 'testiukko2',
+        password: 'salasana2'
+      }
+      cy.request('POST', 'http://localhost:3003/api/users/', user2)
+      cy.get('#username').type('testiukko2')
+      cy.get('#password').type('salasana2')
+      cy.get('#loginButton').click()
+
+      cy.get('#createButton').click()
+      cy.get('#title').type('Testi blogi')
+      cy.get('#author').type('Testi kirjoittaja')
+      cy.get('#url').type('http://testi.fi')
+      cy.get('#submitButton').click()
+
+      cy.get('#logoutButton').click()
+
+      cy.get('#username').type('testiukko')
+      cy.get('#password').type('salasana')
+      cy.get('#loginButton').click()
+
+      cy.get('#viewButton').click()
+      cy.get('#removeButton').should('not.exist')
+    })
+  })
 })
