@@ -36,14 +36,14 @@ const Blog = ({ blog, addLike, user, removeBlog }) => {
     <div style={blogStyle}>
       <div>
         {blog.title}, {blog.author}
-        <button onClick={toggleVisibility}>
+        <button id="viewButton" onClick={toggleVisibility}>
           {visible ? 'hide' : 'view'}
         </button>
       </div>
       {visible && (
         <div>
           <p>{blog.url}</p>
-          <p>{blog.likes} likes <button onClick={likeClicked}>like</button></p>
+          <p>{blog.likes} likes <button id="likeButton" onClick={likeClicked}>like</button></p>
           <p>{blog.user.name}</p>
           <div>
             {showRemove()}

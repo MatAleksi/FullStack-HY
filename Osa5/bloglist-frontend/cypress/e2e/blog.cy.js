@@ -50,5 +50,17 @@ describe('Blog app', function() {
       cy.contains('Testi blogi')
       cy.contains('Testi kirjoittaja')
     })
+
+    it('A blog can be liked', function() {
+      cy.get('#createButton').click()
+      cy.get('#title').type('Testi blogi')
+      cy.get('#author').type('Testi kirjoittaja')
+      cy.get('#url').type('http://testi.fi')
+      cy.get('#submitButton').click()
+
+      cy.get('#viewButton').click()
+      cy.get('#likeButton').click()
+      cy.contains('1 likes')
+    })
   })
 })
