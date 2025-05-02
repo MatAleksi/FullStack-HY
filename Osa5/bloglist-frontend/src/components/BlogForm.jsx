@@ -25,7 +25,7 @@ const BlogForm = ({ createBlog }) => {
   return (
     <div>
       <div style={hideWhenVisible}>
-        <button onClick={() => setCreateBlogVisible(!createBlogVisible)}>create</button>
+        <button id="createButton" onClick={() => setCreateBlogVisible(!createBlogVisible)}>create</button>
       </div>
       <div style={showWhenVisible}>
         <div>
@@ -34,6 +34,7 @@ const BlogForm = ({ createBlog }) => {
             <div>
               title
               <input
+                id='title'
                 placeholder='title'
                 type="text"
                 value={title}
@@ -44,6 +45,7 @@ const BlogForm = ({ createBlog }) => {
             <div>
               author
               <input
+                id='author'
                 placeholder='author'
                 type="text"
                 value={author}
@@ -54,6 +56,7 @@ const BlogForm = ({ createBlog }) => {
             <div>
               url
               <input
+                id='url'
                 placeholder='url'
                 type="text"
                 value={url}
@@ -61,7 +64,7 @@ const BlogForm = ({ createBlog }) => {
                 onChange={({ target }) => setUrl(target.value)}
               />
             </div>
-            <button type="submit">submit</button>
+            <button id="submitButton" type="submit">submit</button>
           </form>
         </div>
       </div>

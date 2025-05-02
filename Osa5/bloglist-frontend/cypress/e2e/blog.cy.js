@@ -34,4 +34,21 @@ describe('Blog app', function() {
       cy.get('#login-button').should('be.visible')
     })
   })
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.get('#username').type('testiukko')
+      cy.get('#password').type('salasana')
+      cy.get('#login-button').click()
+    })
+
+    it('A blog can be created', function() {
+      cy.get('#createButton').click()
+      cy.get('#title').type('Testi blogi')
+      cy.get('#author').type('Testi kirjoittaja')
+      cy.get('#url').type('http://testi.fi')
+      cy.get('#submitButton').click()
+      cy.contains('Testi blogi')
+      cy.contains('Testi kirjoittaja')
+    })
+  })
 })
