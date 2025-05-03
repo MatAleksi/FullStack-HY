@@ -59,7 +59,7 @@ describe('Blog app', function() {
       cy.get('#submitButton').click()
 
       cy.get('#viewButton').click()
-      cy.get('#likeButton').click()
+      cy.get('.likeButton').eq(0).click()
       cy.contains('1 likes')
     })
     it('A blog can be removed', function() {
@@ -72,6 +72,29 @@ describe('Blog app', function() {
       cy.get('#viewButton').click()
       cy.get('#removeButton').click()
       cy.contains('Testi blogi').should('not.exist')
+    })
+    it('Blogs are ordered by likes', function() {
+      cy.get('#createButton').click()
+      cy.get('#title').type('Testi blogi 1')
+      cy.get('#author').type('Testi kirjoittaja1')
+      cy.get('#url').type('http://testi.fi')
+      cy.get('#submitButton').click()
+
+      cy.contains('Testi blogi 1, Testi kirjoittaja1').contains('view').click()
+      cy.get('.likeButton').eq(0).click()
+
+      cy.get('#title').type('Testi blogi 2')
+      cy.get('#author').type('Testi kirjoittaja2')
+      cy.get('#url').type('http://testi2.fi')
+      cy.get('#submitButton').click()
+
+      cy.contains('Testi blogi 2, Testi kirjoittaja2').contains('view').click()
+      cy.get('.likeButton').eq(1).click()
+      cy.wait(500)
+      cy.get('.likeButton').eq(1).click()
+
+      cy.get('.blog').eq(0).should('contain', 'Testi blogi 2')
+      cy.get('.blog').eq(1).should('contain', 'Testi blogi 1')
     })
   })
   describe('Wrong user', function(){
