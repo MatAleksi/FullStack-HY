@@ -27,7 +27,7 @@ const App = () => {
       type: 'ZERO'
     })
   }
-
+ 
   return (
     <div>
       <button onClick={good}>good</button> 
