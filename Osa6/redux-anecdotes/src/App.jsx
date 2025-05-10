@@ -1,36 +1,13 @@
-import { useSelector, useDispatch } from 'react-redux'
-import { vote, add } from './reducers/anecdoteReducer'
+
+import AnecdoteFrom from './components/AnecdoteForm'
+import AnecdoteList from './components/AnecdoteList'
 
 const App = () => {
-  const anecdotes = useSelector(state => state)
-  const dispatch = useDispatch()
-
-  const createAnecdote = (event) => {
-    event.preventDefault()
-    const content = event.target.newAnecdote.value
-    event.target.newAnecdote.value = ''
-    dispatch(add(content))
-  }
-
   return (
     <div>
       <h2>Anecdotes</h2>
-      {anecdotes.map(anecdote =>
-        <div key={anecdote.id}>
-          <div>
-            {anecdote.content}
-          </div>
-          <div>
-            has {anecdote.votes}
-            <button onClick={() => dispatch(vote(anecdote.id))}>vote</button>
-          </div>
-        </div>
-      )}
-      <h2>create new</h2>
-      <form onSubmit={createAnecdote}>
-        <div><input name="newAnecdote"/></div>
-        <button type="submit">create</button>
-      </form>
+      <AnecdoteList/>
+      <AnecdoteFrom/>
     </div>
   )
 }
