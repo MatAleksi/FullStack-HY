@@ -7,11 +7,10 @@ const AnecdoteList = () => {
             return state.anecdotes
         }
         return state.anecdotes.filter(anecdote =>
-            anecdote.content.toLowerCase().includes(state.filter.filter.toLowerCase())
+            anecdote.content.toLowerCase().includes(state.filter.toLowerCase())
         )
     })
     const dispatch = useDispatch()
-
     return (
         <div>
             {anecdotes.map(anecdote =>
