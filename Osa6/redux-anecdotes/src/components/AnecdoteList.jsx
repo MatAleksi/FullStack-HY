@@ -6,6 +6,7 @@ const AnecdoteList = () => {
         if(state.filter === '') {
             return state.anecdotes
         }
+
         return state.anecdotes.filter(anecdote =>
             anecdote.content.toLowerCase().includes(state.filter.toLowerCase())
         )
