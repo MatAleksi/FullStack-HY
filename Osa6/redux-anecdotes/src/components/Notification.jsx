@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux'
 
 const Notification = () => {
   const visible = useSelector(state => {
-    console.log(state.notification)
     if (state.notification === '') {
       return false
     }
