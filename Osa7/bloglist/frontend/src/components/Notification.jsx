@@ -6,7 +6,6 @@ const Notification = () => {
     if (state.notification === '') {
       return false
     }
-    console.log('Notification component rendered')
     return true
   })
   const notification = useSelector(state => {
