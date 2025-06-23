@@ -10,7 +10,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
-import { initializeBlogs, addBlog } from './reducers/blogReducer'
+import { initializeBlogs, addBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
 import { use } from 'react'
 
 const App = () => {
@@ -56,14 +56,8 @@ const App = () => {
   }
 
   const handleVote = async (blog) => {
-    console.log('updating', blog)
-    const updatedBlog = await blogService.update(blog.id, {
-      ...blog,
-      likes: blog.likes + 1,
-    })
-
-    notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`)
-    setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)))
+    dispatch(likeBlog(blog.id))
+    notify(`You liked ${blog.title} by ${blog.author}`)
   }
 
   const handleLogout = () => {
@@ -74,8 +68,7 @@ const App = () => {
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id)
-      setBlogs(blogs.filter((b) => b.id !== blog.id))
+      dispatch(deleteBlog(blog.id))
       notify(`Blog ${blog.title}, by ${blog.author} removed`)
     }
   }
@@ -89,9 +82,6 @@ const App = () => {
       </div>
     )
   }
-
-  const byLikes = (a, b) => b.likes - a.likes
-
   return (
     <div>
       <h2>blogs</h2>

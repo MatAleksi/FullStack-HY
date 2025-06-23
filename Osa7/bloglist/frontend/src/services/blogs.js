@@ -12,6 +12,11 @@ const getAll = () => {
   return request.then((response) => response.data)
 }
 
+const get = (id) => {
+  const request = axios.get(`${baseUrl}/${id}`, getConfit())
+  return request.then((response) => response.data)
+}
+
 const update = (id, newObject) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject, getConfit())
   return request.then((response) => response.data)
@@ -27,4 +32,4 @@ const remove = async (id) => {
   return response.data
 }
 
-export default { getAll, create, update, remove }
+export default { getAll, create, update, remove, get }

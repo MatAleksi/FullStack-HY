@@ -16,6 +16,7 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
 
   const canRemove = blog.user ? blog.user.username === storage.me() : true
 
+
   return (
     <div style={style} className="blog">
       {blog.title} by {blog.author}

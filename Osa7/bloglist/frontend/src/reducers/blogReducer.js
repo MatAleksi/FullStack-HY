@@ -5,15 +5,15 @@ const blogSlice = createSlice({
   name: 'blogs',
   initialState: [],
   reducers: {
-    vote(state, action) {
+    like(state, action) {
       const id = action.payload
       const blog = state.find(b => b.id === id)
-      const votedBlog = {
+      const likedBlog = {
         ...blog,
-        votes: blog.votes + 1
+        likes: blog.likes + 1
       }
-      const newState = state.map(blog => blog.id !== id ? blog : votedBlog)
-      newState.sort((a, b) => b.votes - a.votes)
+      const newState = state.map(blog => blog.id !== id ? blog : likedBlog)
+      newState.sort((a, b) => b.likes - a.likes)
       return newState
     },
     add(state, action) {
@@ -33,7 +33,7 @@ const blogSlice = createSlice({
   }
 })
 
-export const { vote, add, set, update, remove } = blogSlice.actions
+export const { like, add, set, update, remove } = blogSlice.actions
 
 export const initializeBlogs = () => {
   return async (dispatch) => {
@@ -53,12 +53,23 @@ export const addBlog = (content) => {
   }
 }
 
-export const voteBlog = (id) => {
-
+export const likeBlog = (id) => {
+  return async (dispatch) => {
+    const blog = await blogService.get(id)
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes +1
+    }
+    const blogToLike = await blogService.update(id, updatedBlog)
+    dispatch(like(blogToLike.id))
+  }
 }
 
 export const deleteBlog = (id) => {
-
+  return async (dispatch) => {
+    await blogService.remove(id)
+    dispatch(remove(id))
+  }
 }
 
 export default blogSlice.reducer
