@@ -1,8 +1,5 @@
 import { useState, useEffect, createRef } from 'react'
 
-import blogService from './services/blogs'
-import loginService from './services/login'
-import storage from './services/storage'
 import Login from './components/Login'
 import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
@@ -11,24 +8,21 @@ import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, addBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
-import { use } from 'react'
+import { initializeUser, login, logOut } from './reducers/userReducer'
 
 const App = () => {
-  const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
 
   const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
     dispatch(initializeBlogs())
   }, [])
 
   useEffect(() => {
-    const user = storage.loadUser()
-    if (user) {
-      setUser(user)
-    }
+    dispatch(initializeUser())
   }, [])
 
   const blogFormRef = createRef()
@@ -39,11 +33,10 @@ const App = () => {
 
   const handleLogin = async (credentials) => {
     try {
-      const user = await loginService.login(credentials)
-      setUser(user)
-      storage.saveUser(user)
-      notify(`Welcome back, ${user.name}`)
+      dispatch(login(credentials))
+      notify(`Welcome back, ${credentials.username}`)
     } catch (error) {
+      console.error('Login failed:', error)
       notify('Wrong credentials')
     }
   }
@@ -61,9 +54,8 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    setUser(null)
-    storage.removeUser()
     notify(`Bye, ${user.name}!`)
+    dispatch(logOut())
   }
 
   const handleDelete = async (blog) => {
