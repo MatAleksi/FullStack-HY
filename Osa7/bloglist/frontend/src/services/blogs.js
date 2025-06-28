@@ -32,4 +32,9 @@ const remove = async (id) => {
   return response.data
 }
 
-export default { getAll, create, update, remove, get }
+const getUsers = async () => {
+  const response = await axios.get('/api/users', getConfit())
+  return response.data
+}
+
+export default { getAll, create, update, remove, get, getUsers }
