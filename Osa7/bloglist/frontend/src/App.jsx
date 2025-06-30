@@ -3,11 +3,12 @@ import { useState, useEffect, createRef } from 'react'
 import Login from './components/Login'
 import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
+import NewComment from './components/NewComment'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { set, setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
-import { initializeBlogs, addBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
+import { initializeBlogs, addBlog, likeBlog, deleteBlog, commentBlog } from './reducers/blogReducer'
 import { initializeUser, login, logOut } from './reducers/userReducer'
 import { initializeUsers } from './reducers/usersReducer'
 import {
@@ -147,14 +148,21 @@ const BlogDetail = ({ blogs, user }) => {
       }, 500)
     }
   }
+
   const id = useParams().id
+
+  const handleComment = async (comment) => {
+    console.log('comment', comment)
+    dispatch(commentBlog(id, comment))
+    dispatch(setNotification(`Comment added: ${comment}`))
+  }
+
   const blog = blogs.find(b => b.id === id)
   if (!blog) {
     return <div>Loading...</div>
   }
   const checkOwnership = () => {
-    console.log('blog.user', blog.user)
-    console.log('user', user)
+    console.log('blog', blog)
     if (blog.user.name !== user.name) {
       return false
     } else {
@@ -170,6 +178,13 @@ const BlogDetail = ({ blogs, user }) => {
       {checkOwnership() && (
         <button onClick={() => handleDelete(blog)}>remove</button>
       )}
+      <h4>comments</h4>
+      <NewComment doCreate={handleComment} />
+      <ul>
+        {blog.comments.map((comment, id) => (
+          <li key={id}>{comment}</li>
+        ))}
+      </ul>
     </div>
   )
 }

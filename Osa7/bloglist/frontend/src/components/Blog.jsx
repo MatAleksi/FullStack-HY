@@ -31,6 +31,7 @@ Blog.propTypes = {
     title: PropTypes.string.isRequired,
     likes: PropTypes.number.isRequired,
     user: PropTypes.object,
+    comments: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   handleVote: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,

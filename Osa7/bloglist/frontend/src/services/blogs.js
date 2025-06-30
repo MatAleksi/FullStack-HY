@@ -37,4 +37,12 @@ const getUsers = async () => {
   return response.data
 }
 
-export default { getAll, create, update, remove, get, getUsers }
+const postComment = async (id, comment) => {
+  const commentObject = {
+    comment: comment,
+  }
+  const response = await axios.post(`${baseUrl}/${id}/comments`, commentObject, getConfit())
+  return response.data
+}
+
+export default { getAll, create, update, remove, get, getUsers, postComment }
