@@ -1,5 +1,6 @@
 import { use } from 'react'
 import { useSelector } from 'react-redux'
+import { Alert } from '@mui/material'
 
 const Notification = () => {
   const visible = useSelector(state => {
@@ -15,21 +16,12 @@ const Notification = () => {
     return state.notification
   })
 
-  const style = {
-    backgroundColor: 'lightgrey',
-    margin: '10px',
-    padding: '10px',
-    border: '2px solid',
-    borderColor: 'black',
-    borderRadius: '5px',
-  }
-
   return (
     <div>
       {visible && (
-        <div style={style}>
+        <Alert severity="info" sx={{ m: 1 }}>
           {notification}
-        </div>
+        </Alert>
       )}
     </div>
   )

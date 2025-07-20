@@ -16,7 +16,30 @@ import {
   Routes, Route, Link, useParams,
   useNavigate
 } from 'react-router-dom'
-import { use } from 'react'
+import {
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+  Tab,
+  styled,
+  AppBar,
+  Toolbar,
+  Button,
+  Box,
+  Card,
+} from '@mui/material'
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: "white",
+  },'&:nth-of-type(even)': {
+    backgroundColor: "lightgrey",
+  },
+}))
 
 const Menu = ( { users, blogs, user } ) => {
   return (
@@ -35,24 +58,26 @@ const Users = ({ users }) => {
   return (
     <div>
       <h2>Users</h2>
-      <table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>blogs created</th>
-          </tr>
-          {users.map(user => (
-            <tr key={user.id}>
-              <td>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
-              </td>
-              <td>
-                <a>{user.blogs.length}</a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            <StyledTableRow>
+              <TableCell></TableCell>
+              <TableCell><h3>blogs created</h3></TableCell>
+            </StyledTableRow>
+            {users.map(user => (
+              <StyledTableRow key={user.id}>
+                <TableCell>
+                  <Link to={`/users/${user.id}`}>{user.name}</Link>
+                </TableCell>
+                <TableCell>
+                  <a>{user.blogs.length}</a>
+                </TableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 }
@@ -67,13 +92,19 @@ const User = ({ users }) => {
 
   return (
     <div>
-      <h2>{user.name}</h2>
-      <h3>Added blogs</h3>
-      <ul>
-        {user.blogs.map(blog => (
-          <li key={blog.id}>{blog.title}</li>
-        ))}
-      </ul>
+      <Card variant="outlined" sx={{ m:1, p:2 }}>
+        <h2>{user.name}</h2>
+        <h3>Added blogs</h3>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableBody>
+              {user.blogs.map(blog => (
+                <StyledTableRow key={blog.id}>{blog.title}</StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Card>
     </div>
   )
 }
@@ -83,17 +114,6 @@ const Blogs = ({ blogs }) => {
     dispatch(setNotification(message))
   }
   const dispatch = useDispatch()
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog.id))
-      notify(`Blog ${blog.title}, by ${blog.author} removed`)
-    }
-  }
-
-  const handleVote = async (blog) => {
-    dispatch(likeBlog(blog.id))
-    notify(`You liked ${blog.title} by ${blog.author}`)
-  }
 
   const handleCreate = async (blog) => {
     dispatch(addBlog(blog))
@@ -106,20 +126,24 @@ const Blogs = ({ blogs }) => {
   }
 
   const blogFormRef = createRef()
-
   return (
     <div>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
       </Togglable>
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleVote={handleVote}
-          handleDelete={handleDelete}
-        />
-      ))}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {blogs.map((blog) => (
+              <StyledTableRow key={blog.id}>
+                <TableCell>
+                  <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                </TableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 }
@@ -171,20 +195,22 @@ const BlogDetail = ({ blogs, user }) => {
   }
   return (
     <div>
-      <h3>{blog.title} {blog.author}</h3>
-      <a href={`${blog.url}`}>{blog.url}</a>
-      <p>{blog.likes} likes <button onClick={() => handleVote(blog)}>like</button></p>
-      <p>added by {blog.user.name}</p>
-      {checkOwnership() && (
-        <button onClick={() => handleDelete(blog)}>remove</button>
-      )}
-      <h4>comments</h4>
-      <NewComment doCreate={handleComment} />
-      <ul>
-        {blog.comments.map((comment, id) => (
-          <li key={id}>{comment}</li>
-        ))}
-      </ul>
+      <Card variant="outlined" sx={{ m:1, p:2 }}>
+        <h2>{blog.title} by {blog.author}</h2>
+        <a href={`${blog.url}`}>{blog.url}</a>
+        <p>{blog.likes} likes <Button variant="outlined" onClick={() => handleVote(blog)}>like</Button></p>
+        <b>Added by {blog.user.name} </b>
+        {checkOwnership() && (
+          <Button variant="outlined" color="error" onClick={() => handleDelete(blog)}>remove</Button>
+        )}
+        <h3>comments</h3>
+        <NewComment doCreate={handleComment} />
+        <ul>
+          {blog.comments.map((comment, id) => (
+            <li key={id}>{comment}</li>
+          ))}
+        </ul>
+      </Card>
     </div>
   )
 }
@@ -228,25 +254,34 @@ const App = () => {
 
   if (!user) {
     return (
-      <div>
-        <h2>blogs</h2>
-        <Notification/>
-        <Login doLogin={handleLogin} />
-      </div>
+      <Container maxWidth={false}>
+        <div>
+          <h2>Blogs</h2>
+          <Notification/>
+          <Login doLogin={handleLogin} />
+        </div>
+      </Container>
     )
   }
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification/>
+    <Container maxWidth={false}>
       <div>
-        <Link style={padding} to="/">blogs</Link>
-        <Link style={padding} to="/users">users</Link>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
+        <h2>Blogs</h2>
+        <Notification/>
+        <div>
+          <AppBar position="static">
+            <Toolbar>
+              <Button color="inherit" variant="outlined" sx={{ m:1 }} component={Link} to="/">blogs</Button>
+              <Button color="inherit" variant="outlined" sx={{ m:1 }} component={Link} to="/users">users</Button>             
+              <Box sx={{ flexGrow: 1 }} />
+              Logged in as {user.name}
+              <Button color="error" variant="contained" sx={{ m:1 }} onClick={handleLogout}>logout</Button>
+            </Toolbar>
+          </AppBar>
+        </div>
+        <Menu users={users} blogs={blogs} user={user} />
       </div>
-      <Menu users={users} blogs={blogs} user={user} />
-    </div>
+    </Container>
   )
 }
 
